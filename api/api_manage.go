@@ -1,0 +1,25 @@
+package main
+
+import (
+	"morefruit/api/apicom"
+	"morefruit/api/rpc"
+	"morefruit/common"
+
+	"github.com/fvbock/endless"
+	"github.com/gin-gonic/gin"
+)
+
+func main() {
+	// token, _ := apicom.CreateToken("lijun", "123", common.TokenExpireTime)
+	// fmt.Println(token)
+	e := gin.Default()
+	apicom.AppendRoute(e, &rpc.ShopRoute{})
+	apicom.AppendRoute(e, &rpc.AccountRoute{})
+	apicom.AppendRoute(e, &rpc.OrderRoute{})
+	defer apicom.CleanAllRoute()
+	endless.DefaultReadTimeOut = common.ApiReadTimeOut
+	endless.DefaultWriteTimeOut = common.ApiWriteTimeOut
+	endless.DefaultMaxHeaderBytes = 1 << 20
+	endless.ListenAndServeTLS(common.ApiPort, "server.crt", "server.key", e)
+	//endless.ListenAndServe(common.ApiPort, e)
+}
