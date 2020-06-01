@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
+
 	consul "github.com/hashicorp/consul/api"
 	"google.golang.org/grpc/grpclog"
-	"time"
 )
 
 type Registrar struct {
@@ -47,7 +48,7 @@ func NewRegistrar(cfg *Congfig) (*Registrar, error) {
 	}, nil
 }
 
-func (c *Registrar) Register() error {
+func (c *Registrar) Register(errChan chan<- error) error {
 
 	// register service
 	metadata, err := json.Marshal(c.cfg.NData.Metadata)
@@ -77,6 +78,7 @@ func (c *Registrar) Register() error {
 	}
 
 	err = register()
+	errChan <- err
 	if err != nil {
 		return err
 	}

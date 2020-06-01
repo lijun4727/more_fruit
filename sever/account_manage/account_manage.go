@@ -9,13 +9,11 @@ import (
 	"morefruit/base/balance"
 	"morefruit/common"
 	"morefruit/sever/sercom"
+	"net"
 	"strconv"
 
-	"net"
 	"regexp"
 	"unicode/utf8"
-
-	"morefruit/base/grpc-lb/registry/consul"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
@@ -26,9 +24,9 @@ import (
 var x *xorm.Engine
 
 var (
-	nodeID        = flag.String("node", "node0", "rpc cluster node ID")
+	nodeID        = flag.String("node", "node_0", "rpc cluster node ID")
 	consulAddr    = flag.String("consulAddr", "http://127.0.0.1:8500", "consul agent node address")
-	consulSrvName = flag.String("consulSrvName", "agent-one", "consul agent server name")
+	consulSrvName = flag.String("consulSrvName", "account_manage", "consul agent server name")
 )
 
 type AccountManageServer struct {
@@ -82,12 +80,7 @@ func (*AccountManageServer) CreateAccount(c context.Context, accountInfo *common
 	return &common.ErrorCode{ErrCode: common.ERROR_CODE_NONE}, nil
 }
 
-func registerToConsul() (*consul.Registrar, error) {
-	// addrs, err := net.InterfaceAddrs()
-	// if err != nil {
-	// 	return nil, err
-	// }
-
+func registerToConsul() (*balance.ConsulBalance, error) {
 	port, _ := strconv.Atoi(common.AccountRpcPort[1:])
 
 	config := balance.Config{
@@ -96,20 +89,22 @@ func registerToConsul() (*consul.Registrar, error) {
 		NodeID:        *nodeID,
 		Port:          port,
 		Weight:        "1",
+		Ttl:           5,
 	}
-	register, err := balance.RegisterServerIntoConsul(&config)
+	cb := balance.ConsulBalance{}
+	err := cb.RegisterServerIntoConsul(&config)
 
-	return register, err
+	return &cb, err
 }
 
 func main() {
 	var err error
-	regist, err := registerToConsul()
+	cb, err := registerToConsul()
 	if err != nil {
 		log.Fatalf("failed to registerToConsul: %v", err)
 		return
 	}
-	defer regist.Unregister()
+	defer cb.UnRegister()
 
 	x, err = xorm.NewEngine("mysql", common.MysqlConnCmd)
 	if err != nil {
