@@ -3,7 +3,7 @@ package balance
 import (
 	"errors"
 	"fmt"
-	"morefruit/base/grpc-lb/registry/consul"
+	"morefruit/third_party/grpc-lb/registry/consul"
 	"net"
 	"sync"
 
@@ -34,7 +34,7 @@ type ConsulBalance struct {
 	register *consul.Registrar
 }
 
-func (cb *ConsulBalance) RegisterServerIntoConsul(config *Config) error {
+func (cb *ConsulBalance) Register(config *Config) error {
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {
 		return err
@@ -75,12 +75,12 @@ func (cb *ConsulBalance) RegisterServerIntoConsul(config *Config) error {
 
 	cb.wg = sync.WaitGroup{}
 	cb.wg.Add(1)
-	errChan := make(chan error, 1)
-	go func(errChan chan<- error) {
-		cb.register.Register(errChan)
+	result := make(chan error, 1)
+	go func(result chan<- error) {
+		cb.register.Register(result)
 		cb.wg.Done()
-	}(errChan)
-	return <-errChan
+	}(result)
+	return <-result
 }
 
 func (cb *ConsulBalance) UnRegister() {

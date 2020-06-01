@@ -80,7 +80,7 @@ func (*AccountManageServer) CreateAccount(c context.Context, accountInfo *common
 	return &common.ErrorCode{ErrCode: common.ERROR_CODE_NONE}, nil
 }
 
-func registerToConsul() (*balance.ConsulBalance, error) {
+func registerInConsul() (*balance.ConsulBalance, error) {
 	port, _ := strconv.Atoi(common.AccountRpcPort[1:])
 
 	config := balance.Config{
@@ -92,14 +92,14 @@ func registerToConsul() (*balance.ConsulBalance, error) {
 		Ttl:           5,
 	}
 	cb := balance.ConsulBalance{}
-	err := cb.RegisterServerIntoConsul(&config)
+	err := cb.Register(&config)
 
 	return &cb, err
 }
 
 func main() {
 	var err error
-	cb, err := registerToConsul()
+	cb, err := registerInConsul()
 	if err != nil {
 		log.Fatalf("failed to registerToConsul: %v", err)
 		return

@@ -48,11 +48,13 @@ func NewRegistrar(cfg *Congfig) (*Registrar, error) {
 	}, nil
 }
 
-func (c *Registrar) Register(errChan chan<- error) error {
+//函数退出时必须至少写入通道result一次
+func (c *Registrar) Register(result chan<- error) error {
 
 	// register service
 	metadata, err := json.Marshal(c.cfg.NData.Metadata)
 	if err != nil {
+		result <- err
 		return err
 	}
 	tags := make([]string, 0)
@@ -78,7 +80,7 @@ func (c *Registrar) Register(errChan chan<- error) error {
 	}
 
 	err = register()
-	errChan <- err
+	result <- err
 	if err != nil {
 		return err
 	}
