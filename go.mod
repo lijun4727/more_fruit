@@ -12,6 +12,8 @@ require (
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/go-xorm/xorm v0.7.9
 	github.com/golang/protobuf v1.3.5
+	github.com/hashicorp/consul/api v1.3.0
+	github.com/liyue201/grpc-lb v0.0.0-20200520114604-e21a7d61a2bb
 	github.com/streadway/amqp v0.0.0-20200108173154-1c71cc93ed71
 	github.com/ziutek/mymysql v1.5.4
 	go.mongodb.org/mongo-driver v1.3.3

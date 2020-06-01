@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"morefruit/base/rabrpc"
 	"morefruit/common"
 	"morefruit/sever/sercom"
 	"time"
@@ -256,7 +257,7 @@ func main() {
 	})
 	defer redisMasterClient.Close()
 
-	var rabRpc common.RabbitRpc
+	var rabRpc rabrpc.RabbitRpc
 	err = rabRpc.Connect(common.RabbitmqHandleOrderAddress)
 	if err != nil {
 		log.Fatalf("rabRpc connect failed:%v", err)

@@ -3,6 +3,7 @@ package rpc
 import (
 	"encoding/json"
 	"io/ioutil"
+	"morefruit/base/rabrpc"
 	"morefruit/common"
 	"net/http"
 	"strconv"
@@ -11,7 +12,7 @@ import (
 )
 
 type OrderRoute struct {
-	rabbitRpc common.RabbitRpc
+	rabbitRpc rabrpc.RabbitRpc
 }
 
 func (or *OrderRoute) Route(e *gin.Engine) {

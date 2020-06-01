@@ -1,4 +1,4 @@
-package apicom
+package jwt
 
 import (
 	"errors"

@@ -1,4 +1,4 @@
-package common
+package rabrpc
 
 import (
 	context "context"

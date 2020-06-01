@@ -2,6 +2,7 @@ package apicom
 
 import (
 	"context"
+	"morefruit/base/jwt"
 	"morefruit/common"
 	"net/http"
 	"reflect"
@@ -95,7 +96,7 @@ func (rc *RpcClient) replayResult(err error, errCode *common.ErrorCode, createTo
 	errMsg := common.ERROR_CODE_name[(int32)(errCode.ErrCode)]
 	if errCode.ErrCode == common.ERROR_CODE_NONE {
 		if createToken {
-			token, err := CreateToken("lijun", "192.168.1.1", common.TokenExpireTime)
+			token, err := jwt.CreateToken("lijun", "192.168.1.1", common.TokenExpireTime)
 			if err != nil {
 				rc.Context.JSON(http.StatusInternalServerError, gin.H{
 					"message": err.Error(),
