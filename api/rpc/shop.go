@@ -22,7 +22,7 @@ type ShopRoute struct {
 
 func (sr *ShopRoute) Build(c *gin.Context) {
 	sr.rpcClient.Call(c, reflect.TypeOf(common.Shop{}),
-		reflect.ValueOf(common.NewShopManageClient), "Build", false)
+		reflect.ValueOf(common.NewShopManageClient), "Build", false, "")
 }
 
 func (sr *ShopRoute) AddImage(c *gin.Context) {
@@ -58,7 +58,7 @@ func (sr *ShopRoute) AddImage(c *gin.Context) {
 
 func (sr *ShopRoute) AddGoods(c *gin.Context) {
 	sr.rpcClient.Call(c, reflect.TypeOf(common.Goodses{}),
-		reflect.ValueOf(common.NewShopManageClient), "AddGoods", false)
+		reflect.ValueOf(common.NewShopManageClient), "AddGoods", false, "")
 }
 
 func (sr *ShopRoute) Route(e *gin.Engine) {

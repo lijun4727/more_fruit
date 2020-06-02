@@ -29,4 +29,5 @@ const (
 	RabbitmqHandleOrderQuene   = "create_order"
 	RabbitmqHandleOrderTimeout = time.Minute
 	MongoConnCmd               = "mongodb://lion:123456@192.168.1.6:27017"
+	AccountManageSvrName       = "account_manage"
 )

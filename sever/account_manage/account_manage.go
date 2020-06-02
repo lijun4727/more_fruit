@@ -24,12 +24,10 @@ import (
 var x *xorm.Engine
 
 var (
-	nodeID        = flag.String("node", "node_0", "rpc cluster node ID")
-	consulAddr    = flag.String("consulAddr", "http://127.0.0.1:8500", "consul agent node address")
-	consulSrvName = flag.String("consulSrvName", "account_manage", "consul agent server name")
+	nodeID = flag.String("node", "node_0", "rpc cluster node ID")
 )
 
-func init(){
+func init() {
 	flag.Parse()
 }
 
@@ -81,6 +79,8 @@ func (*AccountManageServer) CreateAccount(c context.Context, accountInfo *common
 		return &common.ErrorCode{ErrCode: common.ERROR_CODE_INTERNAL_ERROR}, err
 	}
 
+	fmt.Println("CreateAccount have called")
+
 	return &common.ErrorCode{ErrCode: common.ERROR_CODE_NONE}, nil
 }
 
@@ -88,15 +88,15 @@ func registerInConsul() (*balance.ConsulBalance, error) {
 	port, _ := strconv.Atoi(common.AccountRpcPort[1:])
 
 	config := balance.Config{
-		ConsulAddr:    *consulAddr,
-		ConsulSrvName: *consulSrvName,
+		ConsulAddr:    "http://127.0.0.1:8500",
+		ConsulSrvName: common.AccountManageSvrName,
 		NodeID:        *nodeID,
 		Port:          port,
 		Weight:        "1",
 		Ttl:           5,
 	}
 	cb := balance.ConsulBalance{}
-	fmt.Printf("Register config=%+v",config)
+	fmt.Printf("Register config=%+v\n", config)
 	err := cb.Register(&config)
 
 	return &cb, err

@@ -4,37 +4,49 @@ import (
 	"context"
 	"morefruit/base/jwt"
 	"morefruit/common"
+	"morefruit/third_party/grpc-lb/balancer"
+	"morefruit/third_party/grpc-lb/registry/consul"
 	"net/http"
 	"reflect"
 	"sync"
 
 	"github.com/gin-gonic/gin"
+	con_api "github.com/hashicorp/consul/api"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
 )
 
 type RpcClient struct {
-	Context *gin.Context
-	Adress  string
-	rpcCon  *grpc.ClientConn
-	mutex   sync.Mutex
+	ServerName string
+	Context    *gin.Context
+	Adress     string
+	rpcCon     *grpc.ClientConn
+	mutex      sync.Mutex
 }
 
 func (rc *RpcClient) connectServer() error {
 	if rc.rpcCon == nil || rc.rpcCon.GetState() != connectivity.Ready {
 		rc.mutex.Lock()
-		if rc.rpcCon.GetState() == connectivity.Ready {
-			rc.mutex.Unlock()
-			return nil
-		}
-
 		if rc.rpcCon != nil {
 			rc.rpcCon.Close()
 		}
 
 		var err error
-		rc.rpcCon, err = grpc.Dial(rc.Adress, grpc.WithBlock(),
-			grpc.WithTimeout(common.RpcTimeout), grpc.WithInsecure())
+		if len(rc.ServerName) == 0 {
+			rc.rpcCon, err = grpc.Dial(rc.Adress, grpc.WithBlock(),
+				grpc.WithTimeout(common.RpcTimeout), grpc.WithInsecure())
+
+		} else {
+			consul.RegisterResolver("consul", &con_api.Config{Address: "http://127.0.0.1:8500"},
+				rc.ServerName)
+			rc.rpcCon, err = grpc.Dial(
+				"consul:///",
+				grpc.WithBlock(),
+				grpc.WithTimeout(common.RpcTimeout),
+				grpc.WithInsecure(),
+				grpc.WithBalancerName(balancer.RoundRobin))
+		}
+
 		rc.mutex.Unlock()
 		if err != nil {
 			rc.Context.JSON(http.StatusInternalServerError, gin.H{
@@ -47,8 +59,9 @@ func (rc *RpcClient) connectServer() error {
 }
 
 func (rc *RpcClient) Call(c *gin.Context, rpcDataType reflect.Type, newClientFun reflect.Value,
-	rcpMethodName string, createToken bool) {
+	rcpMethodName string, createToken bool, serverName string) {
 	rc.Context = c
+	rc.ServerName = serverName
 	if rc.connectServer() != nil {
 		return
 	}

@@ -15,13 +15,13 @@ type AccountRoute struct {
 
 func (sr *AccountRoute) CreateAccount(c *gin.Context) {
 	sr.rpcAccountManageClient.Call(c, reflect.TypeOf(common.AccountInfo{}),
-		reflect.ValueOf(common.NewAccountManageClient), "CreateAccount", true)
+		reflect.ValueOf(common.NewAccountManageClient), "CreateAccount", true,
+		common.AccountManageSvrName)
 }
 
 func (sr *AccountRoute) Login(c *gin.Context) {
 	sr.rpcAccountLoginClient.Call(c, reflect.TypeOf(common.Account{}),
-		reflect.ValueOf(common.NewAccountLoginClient),
-		"Login", true)
+		reflect.ValueOf(common.NewAccountLoginClient), "Login", true, "")
 }
 
 func (sr *AccountRoute) Route(e *gin.Engine) {

@@ -2,13 +2,14 @@ package balancer
 
 import (
 	"context"
+	"math/rand"
+	"sync"
+
 	"github.com/liyue201/grpc-lb/common"
 	"google.golang.org/grpc/balancer"
 	"google.golang.org/grpc/balancer/base"
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/resolver"
-	"math/rand"
-	"sync"
 )
 
 const RoundRobin = "round_robin"
@@ -50,7 +51,7 @@ type roundRobinPicker struct {
 	next     int
 }
 
-func (p *roundRobinPicker) Pick(ctx context.Context, opts balancer.PickOptions) (balancer.SubConn, func(balancer.DoneInfo), error) {
+func (p *roundRobinPicker) Pick(ctx context.Context, opts balancer.PickInfo) (balancer.SubConn, func(balancer.DoneInfo), error) {
 	p.mu.Lock()
 	sc := p.subConns[p.next]
 	p.next = (p.next + 1) % len(p.subConns)
