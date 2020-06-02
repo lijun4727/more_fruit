@@ -29,6 +29,10 @@ var (
 	consulSrvName = flag.String("consulSrvName", "account_manage", "consul agent server name")
 )
 
+func init(){
+	flag.Parse()
+}
+
 type AccountManageServer struct {
 	common.AccountManageServer
 }
@@ -92,6 +96,7 @@ func registerInConsul() (*balance.ConsulBalance, error) {
 		Ttl:           5,
 	}
 	cb := balance.ConsulBalance{}
+	fmt.Printf("Register config=%+v",config)
 	err := cb.Register(&config)
 
 	return &cb, err
