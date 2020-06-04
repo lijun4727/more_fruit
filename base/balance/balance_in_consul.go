@@ -12,8 +12,8 @@ import (
 
 /*
 	节点启动命令：
-		“consul agent -node=agent-three -bind=192.168.1.5 -enable-local-script-checks=true
-		-data-dir=/tmp/consul -join=192.168.1.6“
+	客户端:consul agent -node=agent-three -bind=192.168.1.5 -enable-local-script-checks=true -data-dir=/tmp/consul -join=192.168.1.6
+	服务端:consul agent -server -bootstrap-expect=1 -node=agent-one -bind=192.168.1.6 -data-dir=/tmp/consul
 */
 
 var (
