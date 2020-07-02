@@ -12,7 +12,7 @@ const (
 	AccountManageRpcAddress    = "127.0.0.1" + AccountRpcPort
 	LoginRpcAddress            = "127.0.0.1" + LoginRpcPort
 	ShopRpcAddress             = "127.0.0.1" + ShopManagePort
-	ApiPort                    = ":8080"
+	ApiPort                    = ":8181"
 	ApiReadTimeOut             = 30 * time.Second
 	ApiWriteTimeOut            = 30 * time.Second
 	RpcTimeout                 = 20 * time.Second
