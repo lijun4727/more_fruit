@@ -2,6 +2,7 @@ package rabrpc
 
 import (
 	context "context"
+	"errors"
 	"log"
 	"runtime"
 	"sync"
@@ -10,26 +11,11 @@ import (
 	"github.com/streadway/amqp"
 )
 
-type RabbitRpcTimeoutError struct {
-}
-
-func (e *RabbitRpcTimeoutError) Error() string {
-	return "Call rabbit rpc time out"
-}
-
-type RabbitParentCtxCancelError struct {
-}
-
-func (e *RabbitParentCtxCancelError) Error() string {
-	return "Parent context cancel"
-}
-
-type RabbitAdrressMatchError struct {
-}
-
-func (e *RabbitAdrressMatchError) Error() string {
-	return "don'n match previous address"
-}
+var (
+	RabbitParentCtxCancelError = errors.New("Parent context cancel")
+	RabbitRpcTimeoutError      = errors.New("Call rabbit rpc time out")
+	RabbitAdrressMatchError    = errors.New("don'n match previous address")
+)
 
 type RabbitRpc struct {
 	amqpConn *amqp.Connection
@@ -135,9 +121,9 @@ func (rabRpc *RabbitRpc) CallRpc(routeKey string, body string, timeout time.Dura
 		msg.Ack(false)
 		return msg.Body, nil
 	case <-t.C:
-		return nil, &RabbitRpcTimeoutError{}
+		return nil, RabbitRpcTimeoutError
 	case <-rabRpc.context.Done():
-		return nil, &RabbitParentCtxCancelError{}
+		return nil, RabbitParentCtxCancelError
 	}
 }
 
